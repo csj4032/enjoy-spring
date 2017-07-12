@@ -1,0 +1,9 @@
+rootProject.name = 'enjoy-spring'
+include 'toby'
+include 'toby:ch1'
+findProject(':toby:ch1')?.name = 'ch1'
+include 'toby:ch1:1.1.1'
+findProject(':toby:ch1:1.1.1')?.name = '1.1.1'
+include 'toby:ch1:1.1.2'
+findProject(':toby:ch1:1.1.2')?.name = '1.1.2'
+
