@@ -16,4 +16,8 @@ include 'toby:ch1:1.5.1'
 findProject(':toby:ch1:1.5.1')?.name = '1.5.1'
 include 'toby:ch1:1.final'
 findProject(':toby:ch1:1.final')?.name = '1.final'
+include 'toby:ch2'
+findProject(':toby:ch2')?.name = 'ch2'
+include 'toby:ch2:2.2.2'
+findProject(':toby:ch2:2.2.2')?.name = '2.2.2'
 
