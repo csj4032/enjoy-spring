@@ -1,7 +1,10 @@
 package springbook.user.dao;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
@@ -52,18 +55,12 @@ public class UserDao {
 	}
 
 	public int getCount() throws SQLException {
-		Connection c = dataSource.getConnection();
-		PreparedStatement ps = c.prepareStatement("select count(*) from users");
-
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int count = rs.getInt(1);
-
-		rs.close();
-		ps.close();
-		c.close();
-
-		return count;
+		return jdbcTemplate.query(
+				(Connection con) -> con.prepareStatement("SELECT COUNT (*) FROM users"),
+				(ResultSet rs) -> {
+					rs.next();
+					return rs.getInt(1);
+				});
 	}
 
 	private PreparedStatement makeStatement(Connection connection) throws SQLException {
