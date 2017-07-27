@@ -37,6 +37,21 @@ public class UserDao {
 		);
 	}
 
+	public User getByName(String name) throws SQLException {
+		return jdbcTemplate.queryForObject(
+				"SELECT id, name, password FROM users WHERE name = ?",
+				new Object[]{name},
+				(ResultSet rs, int rowNum) -> {
+					User user = new User();
+					user.setId(rs.getString("id"));
+					user.setName(rs.getString("name"));
+					user.setPassword(rs.getString("password"));
+
+					return user;
+				}
+		);
+	}
+
 	public void deleteAll() throws SQLException {
 		jdbcTemplate.update("delete from users;");
 	}
