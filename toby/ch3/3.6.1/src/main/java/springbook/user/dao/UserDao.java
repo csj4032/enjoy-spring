@@ -1,23 +1,20 @@
 package springbook.user.dao;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import springbook.user.domain.User;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDao {
 
-	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
 
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.dataSource = dataSource;
 	}
 
 	public void add(User user) throws SQLException {
@@ -25,29 +22,19 @@ public class UserDao {
 	}
 
 	public User get(String id) throws SQLException {
-		Connection c = this.dataSource.getConnection();
-		PreparedStatement ps = c.prepareStatement("select id, name, password from users where id = ?");
-
-		ps.setString(1, id);
-
-		ResultSet rs = ps.executeQuery();
-
-		User user = null;
-
-		if (rs.next()) {
-			user = new User();
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("password"));
-		}
-
-		rs.close();
-		ps.close();
-		c.close();
-
-		if (user == null) throw new EmptyResultDataAccessException(1);
-
-		return user;
+		return jdbcTemplate.query(
+				(Connection con) -> con.prepareStatement("SELECT id, name, password FROM users WHERE id = ?"),
+				(PreparedStatement ps) -> ps.setString(1, id),
+				(ResultSet rs) -> {
+					User user = new User();
+					if (rs.next()) {
+						user.setId(rs.getString("id"));
+						user.setName(rs.getString("name"));
+						user.setPassword(rs.getString("password"));
+					}
+					return user;
+				}
+		);
 	}
 
 	public void deleteAll() throws SQLException {
@@ -56,7 +43,7 @@ public class UserDao {
 
 	public int getCount() throws SQLException {
 		return jdbcTemplate.query(
-				(Connection con) -> con.prepareStatement("SELECT COUNT (*) FROM users"),
+				(Connection con) -> con.prepareStatement("SELECT COUNT(*) FROM users"),
 				(ResultSet rs) -> {
 					rs.next();
 					return rs.getInt(1);
@@ -65,7 +52,7 @@ public class UserDao {
 
 	private PreparedStatement makeStatement(Connection connection) throws SQLException {
 		PreparedStatement ps;
-		ps = connection.prepareStatement("delete from users;");
+		ps = connection.prepareStatement("DELETE FROM users;");
 		return ps;
 	}
 
