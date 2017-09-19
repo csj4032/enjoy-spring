@@ -1,4 +1,4 @@
-package springbook.learningtest.template;
+package springbook.learning.template;
 
 public interface LineCallback<T> {
 

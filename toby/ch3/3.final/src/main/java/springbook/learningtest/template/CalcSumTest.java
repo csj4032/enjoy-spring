@@ -1,4 +1,4 @@
-package springbook.learningtest.template;
+package springbook.learning.template;
 
 import org.junit.Before;
 import org.junit.Test;
